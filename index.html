@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hospital System (Production)</title>
+<title>Hospital Appointment System (Stable)</title>
 
 <style>
 body { margin:0; font-family:Arial; background:#f5f7fa; }
@@ -21,9 +21,17 @@ nav a {
   text-decoration:none;
   padding:8px 12px;
   border-radius:5px;
+  cursor:pointer;
 }
 
-.page { display:none; padding:20px; background:white; margin:20px; border-radius:10px; }
+.page {
+  display:none;
+  padding:20px;
+  background:white;
+  margin:20px;
+  border-radius:10px;
+}
+
 .page.active { display:block; }
 
 .grid {
@@ -73,6 +81,7 @@ button:hover { background:#1e40af; }
 
 <body>
 
+<!-- NAV -->
 <nav>
   <a onclick="router('home')">Home</a>
   <a onclick="router('signup')">Signup</a>
@@ -81,7 +90,7 @@ button:hover { background:#1e40af; }
   <a onclick="router('adminLogin')">Admin</a>
 </nav>
 
-<!-- 🏠 HOME -->
+<!-- HOME -->
 <div id="home" class="page active">
   <h2>Doctors</h2>
 
@@ -100,7 +109,7 @@ button:hover { background:#1e40af; }
   </div>
 </div>
 
-<!-- 👤 SIGNUP -->
+<!-- SIGNUP -->
 <div id="signup" class="page">
   <h2>Patient Signup</h2>
   <input id="name" placeholder="Name">
@@ -109,7 +118,7 @@ button:hover { background:#1e40af; }
   <button onclick="signup()">Create Account</button>
 </div>
 
-<!-- 🔑 LOGIN -->
+<!-- LOGIN -->
 <div id="login" class="page">
   <h2>Patient Login</h2>
   <input id="loginEmail" placeholder="Email">
@@ -117,13 +126,13 @@ button:hover { background:#1e40af; }
   <button onclick="login()">Login</button>
 </div>
 
-<!-- 📋 DASHBOARD -->
+<!-- DASHBOARD -->
 <div id="dashboard" class="page">
-  <h2>My Appointments</h2>
+  <h2>Patient Dashboard</h2>
   <div id="list"></div>
 </div>
 
-<!-- 🧑‍⚕️ ADMIN LOGIN -->
+<!-- ADMIN LOGIN -->
 <div id="adminLogin" class="page">
   <h2>Admin Login</h2>
   <input id="adminEmail" placeholder="Email">
@@ -131,7 +140,7 @@ button:hover { background:#1e40af; }
   <button onclick="adminLogin()">Login</button>
 </div>
 
-<!-- 🧑‍⚕️ ADMIN DASHBOARD -->
+<!-- ADMIN DASHBOARD -->
 <div id="admin" class="page">
   <h2>Admin Dashboard</h2>
   <div id="adminList"></div>
@@ -152,6 +161,7 @@ button:hover { background:#1e40af; }
   </div>
 </div>
 
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
@@ -167,39 +177,36 @@ import {
   ref,
   set,
   push,
-  get,
-  remove
+  get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* ================= FIREBASE ================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
+  apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
 ‎  authDomain: "my-doctor-booking-32153.firebaseapp.com",
 ‎  databaseURL: "https://my-doctor-booking-32153-default-rtdb.firebaseio.com",
 ‎  projectId: "my-doctor-booking-32153",
-‎  storageBucket: "my-doctor-booking-32153.firebasestorage.app",
-‎  messagingSenderId: "180925738750",
-‎  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+let app, auth, db;
 
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getDatabase(app);
+} catch (e) {
+  console.error("Firebase error", e);
+}
+
+/* ================= STATE ================= */
 let user = null;
 let isAdmin = false;
 let selected = {};
 
-// ===============================
-// 🚀 SAFE ROUTER (CORE SYSTEM)
-// ===============================
+/* ================= ROUTER (CRASH-PROOF) ================= */
 window.router = (page) => {
-
-  if (page === "admin" && !isAdmin) {
-    alert("Admin login required");
-    page = "adminLogin";
-  }
-
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+
   const el = document.getElementById(page);
   if (el) el.classList.add("active");
 
@@ -209,23 +216,24 @@ window.router = (page) => {
   if (page === "admin") loadAdmin();
 };
 
-// ===============================
-// 🔐 AUTH STATE (GLOBAL SAFE)
-// ===============================
-onAuthStateChanged(auth, async (u) => {
+/* ================= AUTH STATE ================= */
+onAuthStateChanged(auth, (u) => {
   user = u;
 
-  document.getElementById("userNav").style.display = u ? "block" : "none";
+  const nav = document.getElementById("userNav");
+  if (nav) nav.style.display = u ? "block" : "none";
 
   if (!u) isAdmin = false;
 });
 
-// ===============================
-// 👤 SIGNUP (PATIENT)
-// ===============================
+/* ================= SIGNUP ================= */
 window.signup = async () => {
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email.value, pass.value);
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      pass.value
+    );
 
     await set(ref(db, "users/" + cred.user.uid), {
       name: name.value,
@@ -236,28 +244,27 @@ window.signup = async () => {
     router("login");
 
   } catch (e) {
-    alert(e.message);
+    alert("Signup failed");
   }
 };
 
-// ===============================
-// 🔑 LOGIN (PATIENT)
-// ===============================
+/* ================= LOGIN ================= */
 window.login = async () => {
   try {
-    await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+    await signInWithEmailAndPassword(
+      auth,
+      loginEmail.value,
+      loginPass.value
+    );
 
-    alert("Welcome patient");
     router("dashboard");
 
   } catch (e) {
-    alert(e.message);
+    alert("Login failed");
   }
 };
 
-// ===============================
-// 🧑‍⚕️ ADMIN LOGIN (SECURE)
-// ===============================
+/* ================= ADMIN LOGIN ================= */
 window.adminLogin = async () => {
   try {
     const cred = await signInWithEmailAndPassword(
@@ -275,26 +282,26 @@ window.adminLogin = async () => {
     }
 
     isAdmin = true;
-    alert("Admin login success");
     router("admin");
 
   } catch (e) {
-    alert(e.message);
+    alert("Admin login failed");
   }
 };
 
-// ===============================
-// 📅 BOOK APPOINTMENT
-// ===============================
+/* ================= BOOK ================= */
 window.openBooking = (doc, spec) => {
   if (!user) return alert("Login first");
 
   selected = { doc, spec };
+
   docInfo.innerText = doc + " - " + spec;
   modal.style.display = "flex";
 };
 
-window.closeModal = () => modal.style.display = "none";
+window.closeModal = () => {
+  modal.style.display = "none";
+};
 
 window.book = async () => {
   const id = push(ref(db, "appointments")).key;
@@ -315,9 +322,7 @@ window.book = async () => {
   loadDashboard();
 };
 
-// ===============================
-// 📋 PATIENT DASHBOARD
-// ===============================
+/* ================= PATIENT DASHBOARD ================= */
 async function loadDashboard() {
   const snap = await get(ref(db, "appointments"));
 
@@ -337,12 +342,10 @@ async function loadDashboard() {
     }
   });
 
-  document.getElementById("list").innerHTML = html || "No appointments";
+  list.innerHTML = html || "No appointments";
 }
 
-// ===============================
-// 🧑‍⚕️ ADMIN DASHBOARD
-// ===============================
+/* ================= ADMIN DASHBOARD ================= */
 async function loadAdmin() {
   const snap = await get(ref(db, "appointments"));
 
@@ -355,21 +358,13 @@ async function loadAdmin() {
       <div class="card">
         <p>${d.email}</p>
         <p>${d.doctor}</p>
-        <button onclick="del('${s.key}')">Delete</button>
+        <p>${d.date}</p>
       </div>
     `;
   });
 
-  document.getElementById("adminList").innerHTML = html;
+  adminList.innerHTML = html;
 }
-
-// ===============================
-// ❌ DELETE APPOINTMENT
-// ===============================
-window.del = async (id) => {
-  await remove(ref(db, "appointments/" + id));
-  loadAdmin();
-};
 </script>
 
 </body>
