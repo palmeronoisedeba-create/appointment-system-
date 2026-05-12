@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -70,7 +70,6 @@
 .doctor-card span { display: block; color: #64748b; font-size: 14px; margin-bottom: 12px; }
 .doctor-card button { padding: 8px 12px; font-size: 14px; margin: 0; }
 
-  /* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -107,7 +106,6 @@
   }
 .close-btn:hover { color: #000; }
 
-  /* Appointments list */
 .appointment-card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -183,9 +181,9 @@
     <div id="loginAlert" class="alert"></div>
     <input type="email" id="loginEmail" placeholder="Email" required>
     <input type="password" id="loginPass" placeholder="Password" required>
-    <button id="loginBtn" onclick="login()">Login</button>
+    <button id="loginBtn">Login</button>
     <div class="link">
-      <a onclick="forgotPassword()">Forgot Password?</a><br>
+      <a id="forgotLink">Forgot Password?</a><br>
       Don't have an account? <a onclick="showPage('signup')">Sign up</a>
     </div>
   </div>
@@ -196,7 +194,7 @@
     <input type="text" id="signupName" placeholder="Full Name" required>
     <input type="email" id="signupEmail" placeholder="Email" required>
     <input type="password" id="signupPass" placeholder="Password" required>
-    <button id="signupBtn" onclick="signup()">Sign Up</button>
+    <button id="signupBtn">Sign Up</button>
     <div class="link">
       Already have an account? <a onclick="showPage('login')">Login</a>
     </div>
@@ -242,7 +240,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getDatabase, ref, push, set, get, query, orderByChild, equalTo, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
@@ -256,52 +254,40 @@
 ‎
 ‎// Initialize Firebase
 ‎const app = initializeApp(firebaseConfig);
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getFirestore(app);
+  const db = getDatabase(app);
 
-  window.auth = auth;
-  window.db = db;
-  window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-  window.sendPasswordResetEmail = sendPasswordResetEmail;
-  window.onAuthStateChanged = onAuthStateChanged;
-  window.signOut = signOut;
-  window.collection = collection;
-  window.addDoc = addDoc;
-  window.query = query;
-  window.where = where;
-  window.getDocs = getDocs;
-  window.deleteDoc = deleteDoc;
-  window.doc = doc;
-  window.orderBy = orderBy;
-</script>
+  let currentUser = null;
 
-<script>
-let currentUser = null;
+  window.showPage = showPage;
+  window.openBooking = openBooking;
+  window.closeBooking = closeBooking;
+  window.cancelAppointment = cancelAppointment;
+  window.logout = logout;
 
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  document.querySelector(`a[href="#${pageId}"]`).classList.add('active');
-  window.location.hash = pageId;
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelector(`a[href="#${pageId}"]`).classList.add('active');
+    window.location.hash = pageId;
 
-  if (pageId === 'appointments' && currentUser) {
-    loadAppointments();
+    if (pageId === 'appointments' && currentUser) {
+      loadAppointments();
+    }
   }
-}
 
-window.addEventListener('load', () => {
-  const hash = window.location.hash.replace('#', '') || 'home';
-  showPage(hash);
+  window.addEventListener('load', () => {
+    const hash = window.location.hash.replace('#', '') || 'home';
+    showPage(hash);
 
-  if (window.onAuthStateChanged) {
-    window.onAuthStateChanged(window.auth, (user) => {
+    onAuthStateChanged(auth, (user) => {
       currentUser = user;
       document.getElementById('userStatus').innerHTML = user
-      ? `Logged in as: ${user.email} <br><button onclick="logout()" style="width:auto;margin-top:10px;">Logout</button>`
+    ? `Logged in as: ${user.email} <br><button onclick="logout()" style="width:auto;margin-top:10px;">Logout</button>`
         : 'Not logged in';
 
       document.getElementById('navAppointments').style.display = user? 'block' : 'none';
@@ -310,180 +296,181 @@ window.addEventListener('load', () => {
         loadAppointments();
       }
     });
-  }
-});
 
-async function signup() {
-  const email = document.getElementById('signupEmail').value;
-  const pass = document.getElementById('signupPass').value;
-  const btn = document.getElementById('signupBtn');
-  const alert = document.getElementById('signupAlert');
+    document.getElementById('signupBtn').addEventListener('click', signup);
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('forgotLink').addEventListener('click', forgotPassword);
+    document.getElementById('bookingForm').addEventListener('submit', bookAppointment);
+  });
 
-  btn.disabled = true;
-  alert.className = 'alert';
+  async function signup() {
+    const email = document.getElementById('signupEmail').value;
+    const pass = document.getElementById('signupPass').value;
+    const btn = document.getElementById('signupBtn');
+    const alert = document.getElementById('signupAlert');
 
-  try {
-    await window.createUserWithEmailAndPassword(window.auth, email, pass);
-    alert.textContent = 'Account created successfully!';
-    alert.className = 'alert success';
-    showPage('home');
-  } catch (error) {
-    alert.textContent = error.message;
-    alert.className = 'alert error';
-  }
-  btn.disabled = false;
-}
+    btn.disabled = true;
+    alert.className = 'alert';
 
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const pass = document.getElementById('loginPass').value;
-  const btn = document.getElementById('loginBtn');
-  const alert = document.getElementById('loginAlert');
-
-  btn.disabled = true;
-  alert.className = 'alert';
-
-  try {
-    await window.signInWithEmailAndPassword(window.auth, email, pass);
-    alert.textContent = 'Logged in successfully!';
-    alert.className = 'alert success';
-    showPage('home');
-  } catch (error) {
-    alert.textContent = error.message;
-    alert.className = 'alert error';
-  }
-  btn.disabled = false;
-}
-
-async function forgotPassword() {
-  const email = document.getElementById('loginEmail').value;
-  if (!email) {
-    alert('Please enter your email first');
-    return;
-  }
-
-  try {
-    await window.sendPasswordResetEmail(window.auth, email);
-    alert('Password reset email sent! Check your inbox.');
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-async function logout() {
-  await window.signOut(window.auth);
-  showPage('home');
-}
-
-function openBooking(doctorName, specialty) {
-  if (!currentUser) {
-    alert('Please login first to book an appointment');
-    showPage('login');
-    return;
-  }
-
-  document.getElementById('doctorName').value = doctorName;
-  document.getElementById('doctorDisplay').textContent = doctorName;
-  document.getElementById('doctorSpecialty').textContent = specialty;
-  document.getElementById('bookingModal').classList.add('active');
-  document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
-}
-
-function closeBooking() {
-  document.getElementById('bookingModal').classList.remove('active');
-  document.getElementById('bookingForm').reset();
-  document.getElementById('bookingAlert').className = 'alert';
-}
-
-document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('bookBtn');
-  const alert = document.getElementById('bookingAlert');
-  btn.disabled = true;
-  alert.className = 'alert';
-
-  try {
-    await window.addDoc(window.collection(window.db, 'appointments'), {
-      userId: currentUser.uid,
-      userEmail: currentUser.email,
-      doctorName: document.getElementById('doctorName').value,
-      specialty: document.getElementById('doctorSpecialty').textContent,
-      date: document.getElementById('appointmentDate').value,
-      time: document.getElementById('appointmentTime').value,
-      reason: document.getElementById('appointmentReason').value,
-      createdAt: new Date()
-    });
-
-    alert.textContent = 'Appointment booked successfully!';
-    alert.className = 'alert success';
-    btn.disabled = false;
-
-    setTimeout(() => {
-      closeBooking();
-      showPage('appointments');
-    }, 1500);
-  } catch (error) {
-    alert.textContent = error.message;
-    alert.className = 'alert error';
+    try {
+      await createUserWithEmailAndPassword(auth, email, pass);
+      alert.textContent = 'Account created successfully!';
+      alert.className = 'alert success';
+      showPage('home');
+    } catch (error) {
+      alert.textContent = error.message;
+      alert.className = 'alert error';
+    }
     btn.disabled = false;
   }
-});
 
-async function loadAppointments() {
-  const listDiv = document.getElementById('appointmentsList');
-  listDiv.innerHTML = '<p>Loading...</p>';
+  async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    const btn = document.getElementById('loginBtn');
+    const alert = document.getElementById('loginAlert');
 
-  try {
-    const q = window.query(
-      window.collection(window.db, 'appointments'),
-      window.where('userId', '==', currentUser.uid),
-      window.orderBy('date', 'asc')
-    );
-    const querySnapshot = await window.getDocs(q);
+    btn.disabled = true;
+    alert.className = 'alert';
 
-    if (querySnapshot.empty) {
-      listDiv.innerHTML = '<p>No appointments yet. Book one from the Home page!</p>';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      alert.textContent = 'Logged in successfully!';
+      alert.className = 'alert success';
+      showPage('home');
+    } catch (error) {
+      alert.textContent = error.message;
+      alert.className = 'alert error';
+    }
+    btn.disabled = false;
+  }
+
+  async function forgotPassword() {
+    const email = document.getElementById('loginEmail').value;
+    if (!email) {
+      alert('Please enter your email first');
       return;
     }
 
-    let html = '';
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      html += `
-        <div class="appointment-card">
-          <h4>${data.doctorName}</h4>
-          <p><strong>Specialty:</strong> ${data.specialty}</p>
-          <p class="appointment-meta"><strong>Date:</strong> ${data.date} at ${data.time}</p>
-          <p class="appointment-meta"><strong>Reason:</strong> ${data.reason}</p>
-          <button class="danger" onclick="cancelAppointment('${doc.id}')" style="width:auto; margin-top:10px; padding:8px 16px;">Cancel</button>
-        </div>
-      `;
-    });
-    listDiv.innerHTML = html;
-  } catch (error) {
-    listDiv.innerHTML = `<p class="alert error">Error loading appointments: ${error.message}</p>`;
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert('Password reset email sent! Check your inbox.');
+    } catch (error) {
+      alert(error.message);
+    }
   }
-}
 
-async function cancelAppointment(id) {
-  if (!confirm('Cancel this appointment?')) return;
-
-  try {
-    await window.deleteDoc(window.doc(window.db, 'appointments', id));
-    loadAppointments();
-  } catch (error) {
-    alert('Error canceling appointment: ' + error.message);
+  async function logout() {
+    await signOut(auth);
+    showPage('home');
   }
-}
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-  const modal = document.getElementById('bookingModal');
-  if (event.target == modal) {
-    closeBooking();
+  function openBooking(doctorName, specialty) {
+    if (!currentUser) {
+      alert('Please login first to book an appointment');
+      showPage('login');
+      return;
+    }
+
+    document.getElementById('doctorName').value = doctorName;
+    document.getElementById('doctorDisplay').textContent = doctorName;
+    document.getElementById('doctorSpecialty').textContent = specialty;
+    document.getElementById('bookingModal').classList.add('active');
+    document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
   }
-}
+
+  function closeBooking() {
+    document.getElementById('bookingModal').classList.remove('active');
+    document.getElementById('bookingForm').reset();
+    document.getElementById('bookingAlert').className = 'alert';
+  }
+
+  async function bookAppointment(e) {
+    e.preventDefault();
+    const btn = document.getElementById('bookBtn');
+    const alert = document.getElementById('bookingAlert');
+    btn.disabled = true;
+    alert.className = 'alert';
+
+    try {
+      const newRef = push(ref(db, 'appointments'));
+      await set(newRef, {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        doctorName: document.getElementById('doctorName').value,
+        specialty: document.getElementById('doctorSpecialty').textContent,
+        date: document.getElementById('appointmentDate').value,
+        time: document.getElementById('appointmentTime').value,
+        reason: document.getElementById('appointmentReason').value,
+        createdAt: Date.now()
+      });
+
+      alert.textContent = 'Appointment booked successfully!';
+      alert.className = 'alert success';
+      btn.disabled = false;
+
+      setTimeout(() => {
+        closeBooking();
+        showPage('appointments');
+      }, 1500);
+    } catch (error) {
+      alert.textContent = error.message;
+      alert.className = 'alert error';
+      btn.disabled = false;
+    }
+  }
+
+  async function loadAppointments() {
+    const listDiv = document.getElementById('appointmentsList');
+    listDiv.innerHTML = '<p>Loading...</p>';
+
+    try {
+      const appointmentsRef = ref(db, 'appointments');
+      const q = query(appointmentsRef, orderByChild('userId'), equalTo(currentUser.uid));
+      const snapshot = await get(q);
+
+      if (!snapshot.exists()) {
+        listDiv.innerHTML = '<p>No appointments yet. Book one from the Home page!</p>';
+        return;
+      }
+
+      let html = '';
+      snapshot.forEach((childSnap) => {
+        const data = childSnap.val();
+        html += `
+          <div class="appointment-card">
+            <h4>${data.doctorName}</h4>
+            <p><strong>Specialty:</strong> ${data.specialty}</p>
+            <p class="appointment-meta"><strong>Date:</strong> ${data.date} at ${data.time}</p>
+            <p class="appointment-meta"><strong>Reason:</strong> ${data.reason}</p>
+            <button class="danger" onclick="cancelAppointment('${childSnap.key}')" style="width:auto; margin-top:10px; padding:8px 16px;">Cancel</button>
+          </div>
+        `;
+      });
+      listDiv.innerHTML = html;
+    } catch (error) {
+      listDiv.innerHTML = `<p class="alert error">Error loading appointments: ${error.message}</p>`;
+    }
+  }
+
+  async function cancelAppointment(id) {
+    if (!confirm('Cancel this appointment?')) return;
+
+    try {
+      await remove(ref(db, 'appointments/' + id));
+      loadAppointments();
+    } catch (error) {
+      alert('Error canceling appointment: ' + error.message);
+    }
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('bookingModal');
+    if (event.target == modal) {
+      closeBooking();
+    }
+  }
 </script>
 
 </body>
-   </html>     
+</html>
