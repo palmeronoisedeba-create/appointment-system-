@@ -1,87 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Doctor Appointment System</title>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
-body { background: #f5f7fa; }
+body { font-family: Arial; margin: 0; background:#f5f7fa; }
 
 nav {
-  background: #2563eb;
-  padding: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  background:#2563eb;
+  padding:10px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
 nav a {
-  color: white;
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  color:#fff;
+  text-decoration:none;
+  padding:8px 12px;
+  border-radius:5px;
 }
 
-nav a.active, nav a:hover { background: #1e40af; }
-
-.container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+nav a:hover { background:#1e40af; }
 
 .page {
-  display: none;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
+  display:none;
+  padding:20px;
+  background:white;
+  margin:20px;
+  border-radius:10px;
 }
 
-.page.active { display: block; }
+.page.active { display:block; }
 
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
+/* 🧑‍⚕️ HOME DOCTOR GRID */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+
+.doctor {
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  transition:0.3s;
+}
+
+.doctor:hover {
+  transform:translateY(-5px);
+}
+
+.doctor img {
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+input, button {
+  width:100%;
+  padding:10px;
+  margin:8px 0;
 }
 
 button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
+  background:#2563eb;
+  color:white;
+  border:none;
+  cursor:pointer;
 }
 
-button:hover { background: #1e40af; }
-
-.danger { background: red; }
-
-.doctor-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-}
+button:hover { background:#1e40af; }
 
 .card {
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 10px;
+  padding:10px;
+  border:1px solid #ddd;
+  margin:10px 0;
+  border-radius:8px;
 }
 
 .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  align-items: center;
-  justify-content: center;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  align-items:center;
+  justify-content:center;
 }
 
-.modal.active { display: flex; }
-
 .modal-box {
-  background: white;
-  padding: 20px;
-  width: 90%;
-  max-width: 400px;
+  background:white;
+  padding:20px;
+  width:90%;
+  max-width:400px;
 }
 </style>
 </head>
@@ -92,28 +109,39 @@ button:hover { background: #1e40af; }
   <a href="#home" onclick="show('home')">Home</a>
   <a href="#login" onclick="show('login')">Login</a>
   <a href="#signup" onclick="show('signup')">Signup</a>
-  <a href="#appointments" onclick="show('appointments')" id="navUser" style="display:none;">My Appointments</a>
-  <a href="#admin" onclick="show('admin')" id="navAdmin" style="display:none;">Admin</a>
+  <a href="#appointments" onclick="show('appointments')" id="userNav" style="display:none;">My Appointments</a>
+  <a href="#admin" onclick="show('admin')" id="adminNav" style="display:none;">Admin</a>
 </nav>
 
-<div class="container">
-
-<!-- HOME -->
+<!-- 🏠 HOME PAGE (UPDATED) -->
 <div id="home" class="page active">
-  <h2>Doctors</h2>
 
-  <div class="doctor-grid">
-    <div class="card">
-      <h3>Dr. Sarah</h3>
+  <h2>Our Doctors</h2>
+  <p>Book appointments with trusted doctors instantly.</p>
+
+  <div class="grid">
+
+    <div class="doctor">
+      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2" />
+      <h3>Dr. Sarah Johnson</h3>
       <p>Cardiologist</p>
-      <button onclick="openBook('Dr. Sarah','Cardiologist')">Book</button>
+      <button onclick="openBook('Dr. Sarah Johnson','Cardiologist')">Book Appointment</button>
     </div>
 
-    <div class="card">
-      <h3>Dr. Mike</h3>
+    <div class="doctor">
+      <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d" />
+      <h3>Dr. Michael Chen</h3>
       <p>Neurologist</p>
-      <button onclick="openBook('Dr. Mike','Neurologist')">Book</button>
+      <button onclick="openBook('Dr. Michael Chen','Neurologist')">Book Appointment</button>
     </div>
+
+    <div class="doctor">
+      <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f" />
+      <h3>Dr. Emily Rodriguez</h3>
+      <p>Pediatrician</p>
+      <button onclick="openBook('Dr. Emily Rodriguez','Pediatrician')">Book Appointment</button>
+    </div>
+
   </div>
 </div>
 
@@ -146,8 +174,6 @@ button:hover { background: #1e40af; }
   <div id="adminList"></div>
 </div>
 
-</div>
-
 <!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-box">
@@ -159,7 +185,7 @@ button:hover { background: #1e40af; }
     <input type="time" id="time">
     <input id="reason" placeholder="Reason">
 
-    <button onclick="book()">Confirm</button>
+    <button onclick="book()">Book</button>
     <button onclick="closeModal()">Close</button>
   </div>
 </div>
@@ -190,11 +216,7 @@ const firebaseConfig = {
 ‎  storageBucket: "my-doctor-booking-32153.firebasestorage.app",
 ‎  messagingSenderId: "180925738750",
 ‎  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
-‎};
-‎
-‎// Initialize Firebase
-‎const app = initializeApp(firebaseConfig);
-‎
+‎}
 };
 
 const app = initializeApp(firebaseConfig);
@@ -203,7 +225,7 @@ const db = getDatabase(app);
 
 let user = null;
 let role = "user";
-let docData = {};
+let selected = {};
 
 window.show = (id) => {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
@@ -220,21 +242,16 @@ onAuthStateChanged(auth, async (u) => {
     const snap = await get(ref(db, "users/" + u.uid));
     role = snap.exists() ? snap.val().role : "user";
 
-    document.getElementById("navUser").style.display = "block";
-    document.getElementById("navAdmin").style.display = role === "admin" ? "block" : "none";
+    userNav.style.display = "block";
+    adminNav.style.display = role === "admin" ? "block" : "none";
   }
 });
 
 window.signup = async () => {
-  const email = signupEmail.value;
-  const pass = signupPass.value;
-  const name = signupName.value;
+  const u = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPass.value);
 
-  const cred = await createUserWithEmailAndPassword(auth, email, pass);
-
-  await set(ref(db, "users/" + cred.user.uid), {
-    name,
-    email,
+  await set(ref(db, "users/" + u.user.uid), {
+    name: signupName.value,
     role: "user"
   });
 
@@ -246,24 +263,24 @@ window.login = async () => {
   alert("Logged in");
 };
 
-window.openBook = (d, s) => {
+window.openBook = (d,s) => {
   if (!user) return alert("Login first");
 
-  docData = { doctor: d, spec: s };
+  selected = { d, s };
   docInfo.innerText = d + " - " + s;
-  modal.classList.add("active");
+  modal.style.display = "flex";
 };
 
-window.closeModal = () => modal.classList.remove("active");
+window.closeModal = () => modal.style.display = "none";
 
 window.book = async () => {
-  const id = push(ref(db, "appointments")).key;
+  const id = push(ref(db,"appointments")).key;
 
-  await set(ref(db, "appointments/" + id), {
+  await set(ref(db,"appointments/"+id), {
     userId: user.uid,
     email: user.email,
-    doctor: docData.doctor,
-    spec: docData.spec,
+    doctor: selected.d,
+    spec: selected.s,
     date: date.value,
     time: time.value,
     reason: reason.value
@@ -274,13 +291,17 @@ window.book = async () => {
 };
 
 async function loadUser() {
-  const snap = await get(ref(db, "appointments"));
+  const snap = await get(ref(db,"appointments"));
   let html = "";
 
   snap.forEach(s => {
     const d = s.val();
     if (d.userId === user.uid) {
-      html += `<p>${d.doctor} - ${d.date} <button onclick="del('${s.key}')">X</button></p>`;
+      html += `<div class="card">
+        <p>${d.doctor}</p>
+        <p>${d.date} ${d.time}</p>
+        <button onclick="del('${s.key}')">Cancel</button>
+      </div>`;
     }
   });
 
@@ -288,23 +309,23 @@ async function loadUser() {
 }
 
 window.del = async (id) => {
-  await remove(ref(db, "appointments/" + id));
+  await remove(ref(db,"appointments/"+id));
   loadUser();
 };
 
 async function loadAdmin() {
-  const snap = await get(ref(db, "appointments"));
+  const snap = await get(ref(db,"appointments"));
   let html = "";
 
   snap.forEach(s => {
     const d = s.val();
 
-    html += `
-      <p>
-        ${d.email} - ${d.doctor} (${d.date})
-        <button onclick="del('${s.key}')">Delete</button>
-      </p>
-    `;
+    html += `<div class="card">
+      <p>${d.email}</p>
+      <p>${d.doctor}</p>
+      <p>${d.date}</p>
+      <button onclick="del('${s.key}')">Delete</button>
+    </div>`;
   });
 
   adminList.innerHTML = html;
@@ -312,4 +333,4 @@ async function loadAdmin() {
 </script>
 
 </body>
-</html>  
+</html>
