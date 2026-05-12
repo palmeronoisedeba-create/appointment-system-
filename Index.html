@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Appointment System</title>
+<style>
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1e40af;
+  --danger:#dc2626;
+  --bg:#f6f9fc;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --radius:14px;
+  --shadow:0 8px 24px rgba(15,23,42,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--primary);text-decoration:none;cursor:pointer}
+a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+header h2{font-size:1.25rem;font-weight:700}
+nav{display:flex;gap:18px;align-items:center}
+nav a{color:#fff;font-weight:500}
+.container{max-width:1200px;margin:40px auto;padding:0 20px}
+.section{display:none;animation:fade .3s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:80px 20px;border-radius:var(--radius);text-align:center}
+.hero h1{font-size:2.75rem;margin-bottom:12px}
+.hero p{font-size:1.1rem;opacity:.9;margin-bottom:24px}
+.btn{background:var(--primary);color:#fff;border:none;padding:12px 22px;border-radius:10px;font-weight:600;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn-danger{background:var(--danger)}
+.btn-sm{padding:8px 14px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:40px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;text-align:center}
+.card img{width:100%;height:240px;object-fit:cover}
+.card-body{padding:18px}
+.card h3{margin-bottom:6px}
+.form{background:var(--card);padding:32px;border-radius:var(--radius);box-shadow:var(--shadow);max-width:520px;margin:40px auto}
+.form h2{margin-bottom:16px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;margin:8px 0 16px;font-size:1rem}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--primary);border-color:var(--primary)}
+.tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:10px 18px;background:#e2e8f0;border-radius:10px;cursor:pointer;font-weight:600}
+.tab.active{background:var(--primary);color:#fff}
+table{width:100%;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border-collapse:collapse}
+th,td{padding:14px;text-align:left;border-bottom:1px solid #f1f5f9}
+th{background:var(--primary);color:#fff}
+.badge{padding:4px 10px;border-radius:20px;font-size:.85rem;font-weight:600}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-confirmed{background:#dcfce7;color:#166534}
+.badge-cancelled{background:#fee2e2;color:#991b1b}
+.alert{padding:12px 16px;border-radius:10px;margin:12px 0;font-weight:500}
+.alert-success{background:#dcfce7;color:#166534}
+.alert-error{background:#fee2e2;color:#991b1b}
+.hidden{display:none}
+footer{margin-top:60px;text-align:center;color:var(--muted);padding:20px}
+@media(max-width:768px){
+  header{flex-direction:column;gap:10px}
+  .hero h1{font-size:2rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Doctor Appointment System</h2>
+  <nav>
+    <a onclick="show('home')">Home</a>
+    <a onclick="show('about')">About</a>
+    <a onclick="show('auth')" id="authLink">Login / Signup</a>
+    <a onclick="show('patient')" id="patientLink" class="hidden">Patient</a>
+    <a onclick="show('doctor')" id="doctorLink" class="hidden">Doctor</a>
+    <a onclick="show('admin')" id="adminLink" class="hidden">Admin</a>
+    <a onclick="logout()" id="logoutLink" class="hidden">Logout</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- HOME -->
+  <section id="home" class="section active">
+    <div class="hero">
+      <h1>Book Appointments in Seconds</h1>
+      <p>Connect with certified doctors anytime, anywhere</p>
+      <button class="btn" onclick="show('auth')">Get Started</button>
+    </div>
+    <h2 style="text-align:center;margin-top:50px">Meet Our Doctors</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600" alt="Doctor">
+        <div class="card-body">
+          <h3>Dr. Sarah Johnson</h3>
+          <p class="muted">Cardiologist</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600" alt="Doctor">
+        <div class="card-body">
+          <h3>Dr. Michael Chen</h3>
+          <p class="muted">Neurologist</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1622253692010-333f2da60322?w=600" alt="Doctor">
+        <div class="card-body">
+          <h3>Dr. Emily Davis</h3>
+          <p class="muted">Pediatrician</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="form">
+      <h2>About Us</h2>
+      <p>Doctor Appointment System streamlines healthcare access. Patients can book, track, and manage appointments with verified doctors in real-time. Built for speed, security, and simplicity.</p>
+    </div>
+  </section>
+
+  <!-- AUTH -->
+  <section id="auth" class="section">
+    <div class="form">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('pLogin',event)">Patient Login</div>
+        <div class="tab" onclick="switchTab('pSignup',event)">Patient Signup</div>
+        <div class="tab" onclick="switchTab('dLogin',event)">Doctor Login</div>
+        <div class="tab" onclick="switchTab('dSignup',event)">Doctor Signup</div>
+      </div>
+
+      <div id="pLogin">
+        <input id="pLoginEmail" type="email" placeholder="Email">
+        <input id="pLoginPass" type="password" placeholder="Password">
+        <button class="btn" onclick="patientLogin()">Login</button>
+        <p><a onclick="forgotPassword()">Forgot password?</a></p>
+      </div>
+
+      <div id="pSignup" class="hidden">
+        <input id="pName" type="text" placeholder="Full Name">
+        <input id="pEmail" type="email" placeholder="Email">
+        <input id="pPass" type="password" placeholder="Password">
+        <button class="btn" onclick="patientSignup()">Create Account</button>
+      </div>
+
+      <div id="dLogin" class="hidden">
+        <input id="dLoginEmail" type="email" placeholder="Doctor Email">
+        <input id="dLoginPass" type="password" placeholder="Password">
+        <button class="btn" onclick="doctorLogin()">Login</button>
+        <p><a onclick="forgotPassword()">Forgot password?</a></p>
+      </div>
+
+      <div id="dSignup" class="hidden">
+        <input id="dName" type="text" placeholder="Full Name">
+        <input id="dEmail" type="email" placeholder="Email">
+        <input id="dSpec" type="text" placeholder="Specialty">
+        <input id="dPass" type="password" placeholder="Password">
+        <button class="btn" onclick="doctorSignup()">Create Account</button>
+      </div>
+
+      <div id="authAlert"></div>
+    </div>
+  </section>
+
+  <!-- PATIENT DASHBOARD -->
+  <section id="patient" class="section">
+    <h2>Patient Dashboard</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="switchPDash('book',event)">Book Appointment</div>
+      <div class="tab" onclick="switchPDash('history',event)">My Appointments</div>
+    </div>
+
+    <div id="book">
+      <div class="form">
+        <select id="doctorSelect"><option>Loading doctors...</option></select>
+        <input id="apptDate" type="date">
+        <input id="apptTime" type="time">
+        <textarea id="apptReason" placeholder="Reason for visit"></textarea>
+        <button class="btn" onclick="bookAppointment()">Book Appointment</button>
+        <div id="bookAlert"></div>
+      </div>
+    </div>
+
+    <div id="history" class="hidden">
+      <table id="patientTable">
+        <thead><tr><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DOCTOR DASHBOARD -->
+  <section id="doctor" class="section">
+    <h2>Doctor Dashboard</h2>
+    <table id="doctorTable">
+      <thead><tr><th>Patient</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="section">
+    <h2>Admin Panel</h2>
+    <table id="adminTable">
+      <thead><tr><th>Role</th><th>Name</th><th>Email</th><th>Specialty</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>© 2026 Doctor Appointment System</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, push, set, onValue, update, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* 1. Replace with your Firebase config */
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
+  authDomain: "my-doctor-booking-32153.firebaseapp.com",
+  databaseURL: "https://my-doctor-booking-32153-default-rtdb.firebaseio.com",
+  projectId: "my-doctor-booking-32153",
+  storageBucket: "my-doctor-booking-32153.firebasestorage.app",
+  messagingSenderId: "180925738750",
+  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let currentUser = null;
+let userRole = null;
+const ADMIN_EMAIL = "admin@clinic.com";
+
+/* UI helpers */
+window.show = id => {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+window.switchTab = (tab,e) => {
+  document.querySelectorAll('#auth .tabs + div > div').forEach(d=>d.classList.add('hidden'));
+  document.getElementById(tab).classList.remove('hidden');
+  document.querySelectorAll('#auth .tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+}
+window.switchPDash = (tab,e) => {
+  document.getElementById('book').classList.toggle('hidden', tab!=='book');
+  document.getElementById('history').classList.toggle('hidden', tab!=='history');
+  document.querySelectorAll('#patient .tab').forEach(t=>t.classList.remove('active'));
+  e.target.classList.add('active');
+}
+const alertBox = (id,msg,type) => {
+  document.getElementById(id).innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(()=>document.getElementById(id).innerHTML='',4000);
+}
+
+/* Auth */
+window.patientSignup = async () => {
+  try{
+    const cred = await createUserWithEmailAndPassword(auth,pEmail.value,pPass.value);
+    await set(ref(db,'users/'+cred.user.uid),{name:pName.value,email:pEmail.value,role:'patient'});
+    alertBox('authAlert','Account created. Please login.','success');
+  }catch(e){alertBox('authAlert',e.message,'error')}
+}
+window.doctorSignup = async () => {
+  try{
+    const cred = await createUserWithEmailAndPassword(auth,dEmail.value,dPass.value);
+    await set(ref(db,'users/'+cred.user.uid),{name:dName.value,email:dEmail.value,specialty:dSpec.value,role:'doctor'});
+    alertBox('authAlert','Doctor account created.','success');
+  }catch(e){alertBox('authAlert',e.message,'error')}
+}
+window.patientLogin = async () => {
+  try{await signInWithEmailAndPassword(auth,pLoginEmail.value,pLoginPass.value)}
+  catch(e){alertBox('authAlert',e.message,'error')}
+}
+window.doctorLogin = async () => {
+  try{await signInWithEmailAndPassword(auth,dLoginEmail.value,dLoginPass.value)}
+  catch(e){alertBox('authAlert',e.message,'error')}
+}
+window.forgotPassword = async () => {
+  const email = prompt("Enter your email:");
+  if(!email) return;
+  try{await sendPasswordResetEmail(auth,email);alert("Reset email sent")}
+  catch(e){alert(e.message)}
+}
+window.logout = () => signOut(auth);
+
+/* Data */
+function loadDoctors(){
+  onValue(ref(db,'users'),snap=>{
+    doctorSelect.innerHTML='<option value="">Select Doctor</option>';
+    snap.forEach(c=>{
+      const u=c.val();
+      if(u.role==='doctor') doctorSelect.innerHTML+=`<option value="${c.key}|${u.name} - ${u.specialty}">${u.name} - ${u.specialty}</option>`;
+    })
+  })
+}
+window.bookAppointment = async () => {
+  if(!currentUser||userRole!=='patient')return;
+  const [id,name] = doctorSelect.value.split('|');
+  if(!id||!apptDate.value||!apptTime.value){alertBox('bookAlert','Fill all fields','error');return}
+  await set(push(ref(db,'appointments')),{
+    patientId:currentUser.uid,patientEmail:currentUser.email,
+    doctorId:id,doctorName:name,
+    date:apptDate.value,time:apptTime.value,reason:apptReason.value,
+    status:'Pending',timestamp:Date.now()
+  });
+  alertBox('bookAlert','Appointment booked','success');
+}
+function loadPatientAppts(uid){
+  onValue(ref(db,'appointments'),snap=>{
+    const tbody=document.querySelector('#patientTable tbody');tbody.innerHTML='';
+    snap.forEach(c=>{
+      const a=c.val();
+      if(a.patientId===uid) tbody.innerHTML+=row(a);
+    })
+  })
+}
+function loadDoctorAppts(uid){
+  onValue(ref(db,'appointments'),snap=>{
+    const tbody=document.querySelector('#doctorTable tbody');tbody.innerHTML='';
+    snap.forEach(c=>{
+      const a=c.val();
+      if(a.doctorId===uid) tbody.innerHTML+=`
+        <tr>
+          <td>${a.patientEmail}</td><td>${a.date}</td><td>${a.time}</td><td>${a.reason}</td>
+          <td><span class="badge badge-${a.status.toLowerCase()}">${a.status}</span></td>
+          <td>
+            <button class="btn btn-sm" onclick="updateStatus('${c.key}','Confirmed')">Confirm</button>
+            <button class="btn btn-sm btn-danger" onclick="updateStatus('${c.key}','Cancelled')">Cancel</button>
+          </td>
+        </tr>`;
+    })
+  })
+}
+function loadAdminData(){
+  onValue(ref(db,'users'),snap=>{
+    const tbody=document.querySelector('#adminTable tbody');tbody.innerHTML='';
+    snap.forEach(c=>{
+      const u=c.val();
+      tbody.innerHTML+=`<tr><td>${u.role}</td><td>${u.name||'-'}</td><td>${u.email}</td><td>${u.specialty||'-'}</td></tr>`
+    })
+  })
+}
+window.updateStatus = (key,status)=>update(ref(db,'appointments/'+key),{status});
+const row = a=>`<tr><td>${a.doctorName}</td><td>${a.date}</td><td>${a.time}</td><td>${a.reason}</td>
+<td><span class="badge badge-${a.status.toLowerCase()}">${a.status}</span></td></tr>`
+
+/* Auth state */
+onAuthStateChanged(auth,async user=>{
+  currentUser=user;
+  if(user){
+    const snap=await get(child(ref(db),`users/${user.uid}`));
+    userRole=snap.exists()?snap.val().role:'patient';
+    authLink.classList.add('hidden');logoutLink.classList.remove('hidden');
+    if(userRole==='patient'){patientLink.classList.remove('hidden');show('patient');loadPatientAppts(user.uid);loadDoctors()}
+    if(userRole==='doctor'){doctorLink.classList.remove('hidden');show('doctor');loadDoctorAppts(user.uid)}
+    if(user.email===ADMIN_EMAIL){adminLink.classList.remove('hidden');loadAdminData()}
+  }else{
+    authLink.classList.remove('hidden');
+    patientLink.classList.add('hidden');doctorLink.classList.add('hidden');adminLink.classList.add('hidden');logoutLink.classList.add('hidden');
+  }
+})
+</script>
+</body>
+</html>
