@@ -3,25 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Doctor Appointment System</title>
+<title>Doctor Appointment System</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
-  font-family:Arial,sans-serif;
+  margin:0;
+  font-family:Arial;
   background:#f1f5f9;
-  color:#1e293b;
 }
 
-/* NAVBAR */
 nav{
   background:#2563eb;
-  padding:14px;
+  padding:12px;
   display:flex;
   gap:10px;
   flex-wrap:wrap;
@@ -30,114 +23,58 @@ nav{
 nav a{
   color:white;
   text-decoration:none;
-  padding:8px 14px;
-  border-radius:8px;
+  padding:8px 12px;
+  border-radius:6px;
   cursor:pointer;
 }
 
-nav a:hover{
-  background:rgba(255,255,255,0.2);
-}
-
-/* PAGE */
 .page{
   display:none;
-  max-width:1100px;
-  margin:auto;
   padding:20px;
+  max-width:1000px;
+  margin:auto;
 }
 
 .page.active{
   display:block;
 }
 
-/* HERO */
-.hero{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  color:white;
-  padding:40px 20px;
-  border-radius:20px;
-  margin-bottom:30px;
-  text-align:center;
-}
-
-.hero h1{
-  font-size:34px;
-  margin-bottom:10px;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-}
-
-/* CARD */
 .card{
   background:white;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  padding:15px;
+  border-radius:12px;
+  margin:10px 0;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-.card img{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:12px;
-}
-
-/* FORM */
-.form-box{
-  max-width:420px;
-  margin:auto;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
 }
 
 input{
   width:100%;
-  padding:14px;
-  margin:8px 0;
-  border-radius:10px;
-  border:1px solid #cbd5e1;
+  padding:12px;
+  margin:6px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 
 button{
   width:100%;
   padding:12px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   background:#2563eb;
   color:white;
-  font-size:16px;
   font-weight:bold;
-  cursor:pointer;
 }
 
-button:hover{
-  background:#1d4ed8;
-}
-
-.section-title{
-  margin-bottom:20px;
-  color:#2563eb;
-}
-
-.badge{
-  display:inline-block;
-  background:red;
-  color:white;
-  padding:4px 10px;
-  border-radius:6px;
-  margin-bottom:10px;
-}
-
-.empty{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
+.doctor img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
 }
 </style>
 </head>
@@ -146,145 +83,105 @@ button:hover{
 
 <!-- NAV -->
 <nav>
-  <a onclick="router('home')">Home</a>
-  <a onclick="router('signup')">Sign Up</a>
-  <a onclick="router('login')">Login</a>
-  <a onclick="router('dashboard')">Dashboard</a>
-
-  <!-- ADMIN BUTTON -->
-  <a id="adminBtn" onclick="openAdmin()" style="display:none;">
-    Admin
-  </a>
+<a onclick="router('home')">Home</a>
+<a onclick="router('signup')">Signup</a>
+<a onclick="router('login')">Login</a>
+<a onclick="router('dashboard')">Dashboard</a>
+<a onclick="openAdmin()" id="adminBtn" style="display:none;">Admin</a>
 </nav>
 
 <!-- HOME -->
 <div id="home" class="page active">
 
-  <div class="hero">
-    <h1>Doctor Appointment System</h1>
-    <p>Book appointments with trusted doctors.</p>
-  </div>
+<h2>Doctors</h2>
 
-  <h2 class="section-title">Doctors</h2>
+<div class="grid">
 
-  <div class="grid">
+<div class="card doctor">
+<img src="https://randomuser.me/api/portraits/women/44.jpg">
+<h3>Dr. Sarah</h3>
+<p>Cardiologist</p>
+<button onclick="book('Dr. Sarah','Cardiology')">Book</button>
+</div>
 
-    <div class="card">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg">
-      <h3>Dr. Sarah Johnson</h3>
-      <p>Cardiologist</p>
-      <br>
-      <button onclick="book('Dr. Sarah Johnson','Cardiology')">
-        Book Appointment
-      </button>
-    </div>
+<div class="card doctor">
+<img src="https://randomuser.me/api/portraits/men/32.jpg">
+<h3>Dr. Michael</h3>
+<p>Neurologist</p>
+<button onclick="book('Dr. Michael','Neurology')">Book</button>
+</div>
 
-    <div class="card">
-      <img src="https://randomuser.me/api/portraits/men/32.jpg">
-      <h3>Dr. Michael Chen</h3>
-      <p>Neurologist</p>
-      <br>
-      <button onclick="book('Dr. Michael Chen','Neurology')">
-        Book Appointment
-      </button>
-    </div>
-
-    <div class="card">
-      <img src="https://randomuser.me/api/portraits/women/65.jpg">
-      <h3>Dr. Emily Rodriguez</h3>
-      <p>Pediatrician</p>
-      <br>
-      <button onclick="book('Dr. Emily Rodriguez','Pediatrics')">
-        Book Appointment
-      </button>
-    </div>
-
-  </div>
+</div>
 </div>
 
 <!-- SIGNUP -->
 <div id="signup" class="page">
 
-  <div class="form-box">
-    <h2 class="section-title">Create Account</h2>
+<h2>Signup</h2>
 
-    <input id="su_email" type="email" placeholder="Email">
+<input id="su_email" placeholder="Email">
+<input id="su_pass" type="password" placeholder="Password">
 
-    <input id="su_pass" type="password" placeholder="Password">
-
-    <button onclick="signup()">Create Account</button>
-  </div>
+<button onclick="signup()">Create Account</button>
 
 </div>
 
 <!-- LOGIN -->
 <div id="login" class="page">
 
-  <div class="form-box">
-    <h2 class="section-title">Login</h2>
+<h2>Login</h2>
 
-    <input id="li_email" type="email" placeholder="Email">
+<input id="li_email" placeholder="Email">
+<input id="li_pass" type="password" placeholder="Password">
 
-    <input id="li_pass" type="password" placeholder="Password">
-
-    <button onclick="login()">Login</button>
-  </div>
+<button onclick="login()">Login</button>
 
 </div>
 
-<!-- USER DASHBOARD -->
+<!-- DASHBOARD -->
 <div id="dashboard" class="page">
 
-  <h2 class="section-title">My Appointments</h2>
-
-  <div id="myList" class="grid"></div>
+<h2>My Appointments</h2>
+<div id="myList"></div>
 
 </div>
 
-<!-- ADMIN DASHBOARD -->
+<!-- ADMIN -->
 <div id="admin" class="page">
 
-  <span class="badge">ADMIN</span>
-
-  <h2 class="section-title">Admin Dashboard</h2>
-
-  <div id="adminList" class="grid"></div>
+<h2>Admin Dashboard</h2>
+<div id="adminList"></div>
 
 </div>
 
 <!-- ERUDA -->
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>
-eruda.init();
-</script>
+<script>eruda.init();</script>
 
-<!-- APP -->
+<!-- FIREBASE -->
 <script type="module">
 
-/* IMPORTS */
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  getDatabase,
-  ref,
-  push,
-  set,
-  onValue,
-  get
+getDatabase,
+ref,
+push,
+set,
+onValue,
+get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* FIREBASE CONFIG */
-
 const firebaseConfig = {
-apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
+
+‎  apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
 ‎  authDomain: "my-doctor-booking-32153.firebaseapp.com",
 ‎  databaseURL: "https://my-doctor-booking-32153-default-rtdb.firebaseio.com",
 ‎  projectId: "my-doctor-booking-32153",
@@ -292,300 +189,184 @@ apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
 ‎  messagingSenderId: "180925738750",
 ‎  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
 ‎};
-  
-
+‎
 
 /* INIT */
-
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getDatabase(app);
 
-let currentUser = null;
+let user = null;
 
-/* ROUTER */
+/* ================= ROUTER (FIXED) ================= */
+window.router = function(page){
 
-function router(page){
+  document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
 
-  document.querySelectorAll(".page").forEach(p => {
-    p.classList.remove("active");
-  });
+  const el = document.getElementById(page);
 
-  document.getElementById(page).classList.add("active");
-}
-
-window.router = router;
-
-/* HELPERS */
-
-function showError(msg){
-  alert(msg);
-}
-
-function validateEmail(email){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-/* SIGNUP */
-
-async function signup(){
-
-  const email =
-    document.getElementById("su_email").value.trim();
-
-  const password =
-    document.getElementById("su_pass").value.trim();
-
-  try{
-
-    if(!email || !password){
-      showError("Email and password required");
-      return;
-    }
-
-    if(!validateEmail(email)){
-      showError("Invalid email");
-      return;
-    }
-
-    if(password.length < 6){
-      showError("Password must be at least 6 characters");
-      return;
-    }
-
-    await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    alert("Signup successful");
-
-    router("login");
-
-  }catch(e){
-
-    console.log(e);
-
-    alert(e.message);
-  }
-}
-
-window.signup = signup;
-
-/* LOGIN */
-
-async function login(){
-
-  const email =
-    document.getElementById("li_email").value.trim();
-
-  const password =
-    document.getElementById("li_pass").value.trim();
-
-  try{
-
-    if(!email || !password){
-      showError("Email and password required");
-      return;
-    }
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    alert("Login successful");
-
-    router("dashboard");
-
-  }catch(e){
-
-    console.log(e);
-
-    alert("Login failed");
-  }
-}
-
-window.login = login;
-
-/* BOOK APPOINTMENT */
-
-async function book(doctor,specialty){
-
-  if(!currentUser){
-    alert("Please login first");
-    router("login");
+  if(!el){
+    console.error("Page not found:", page);
     return;
   }
 
-  try{
+  el.classList.add("active");
+};
 
-    const appointmentRef =
-      push(ref(db,"appointments"));
+/* ================= SIGNUP ================= */
+window.signup = async () => {
 
-    await set(appointmentRef,{
-      userId: currentUser.uid,
-      email: currentUser.email,
-      doctor: doctor,
-      specialty: specialty,
-      createdAt: Date.now()
-    });
+try{
 
-    alert("Appointment booked");
+  const email = su_email.value.trim();
+  const pass = su_pass.value.trim();
 
-  }catch(e){
+  await createUserWithEmailAndPassword(auth,email,pass);
 
-    console.log(e);
+  alert("Signup success");
+  router("login");
 
-    alert("Booking failed");
-  }
+}catch(e){
+  alert(e.message);
 }
 
-window.book = book;
+};
 
-/* USER APPOINTMENTS */
+/* ================= LOGIN ================= */
+window.login = async () => {
 
-function loadUserAppointments(){
+try{
 
-  onValue(ref(db,"appointments"), snap => {
+  const email = li_email.value.trim();
+  const pass = li_pass.value.trim();
 
-    let html = "";
+  await signInWithEmailAndPassword(auth,email,pass);
 
-    snap.forEach(child => {
+  router("dashboard");
 
-      const d = child.val();
-
-      if(d.userId === currentUser.uid){
-
-        html += `
-        <div class="card">
-          <h3>${d.doctor}</h3>
-          <p>${d.specialty}</p>
-          <br>
-          <small>
-            ${new Date(d.createdAt).toLocaleString()}
-          </small>
-        </div>
-        `;
-      }
-    });
-
-    document.getElementById("myList").innerHTML =
-      html || `
-      <div class="empty">
-        No appointments yet
-      </div>
-      `;
-  });
+}catch(e){
+  alert("Login failed");
 }
 
-/* OPEN ADMIN */
+};
 
-async function openAdmin(){
+/* ================= BOOK ================= */
+window.book = async (doc,spec) => {
 
-  if(!currentUser){
-    alert("Login first");
-    return;
-  }
-
-  try{
-
-    const adminSnap = await get(
-      ref(db,"admins/" + currentUser.uid)
-    );
-
-    if(!adminSnap.exists()){
-      alert("Access denied");
-      return;
-    }
-
-    router("admin");
-
-  }catch(e){
-
-    console.log(e);
-
-    alert("Admin check failed");
-  }
+if(!user){
+alert("Login first");
+router("login");
+return;
 }
 
-window.openAdmin = openAdmin;
+const id = push(ref(db,"appointments")).key;
 
-/* LOAD ADMIN */
+await set(ref(db,"appointments/"+id),{
+userId:user.uid,
+email:user.email,
+doctor:doc,
+specialty:spec,
+time:Date.now()
+});
 
-async function loadAdmin(){
+alert("Booked");
 
-  const adminSnap = await get(
-    ref(db,"admins/" + currentUser.uid)
-  );
+};
 
-  if(!adminSnap.exists()){
-    return;
-  }
+/* ================= LOAD USER ================= */
+function loadUser(){
 
-  onValue(ref(db,"appointments"), snap => {
+onValue(ref(db,"appointments"), snap=>{
 
-    let html = "";
+let html="";
 
-    snap.forEach(child => {
+snap.forEach(s=>{
 
-      const d = child.val();
+const d=s.val();
 
-      html += `
-      <div class="card">
-        <h3>${d.doctor}</h3>
-        <p>${d.specialty}</p>
-        <small>${d.email}</small>
-      </div>
-      `;
-    });
+if(d.userId===user.uid){
 
-    document.getElementById("adminList").innerHTML = html;
-  });
+html+=`
+<div class="card">
+<b>${d.doctor}</b><br>
+${d.specialty}<br>
+${new Date(d.time).toLocaleString()}
+</div>`;
 }
 
-/* AUTH STATE */
+});
 
-onAuthStateChanged(auth, async (user) => {
+myList.innerHTML=html||"No appointments";
 
-  currentUser = user;
+});
 
-  if(user){
+}
 
-    /* UID CONSOLE */
-    console.log("YOUR UID:", user.uid);
+/* ================= ADMIN CHECK ================= */
+async function checkAdmin(){
 
-    loadUserAppointments();
+const snap = await get(ref(db,"admins/"+user.uid));
 
-    loadAdmin();
+if(snap.exists()){
+adminBtn.style.display="block";
+}
 
-    try{
+}
 
-      const adminSnap = await get(
-        ref(db,"admins/" + user.uid)
-      );
+/* ================= ADMIN ================= */
+window.openAdmin = async () => {
 
-      if(adminSnap.exists()){
+const snap = await get(ref(db,"admins/"+user.uid));
 
-        document.getElementById("adminBtn")
-          .style.display = "block";
-      }
+if(!snap.exists()){
+alert("Not admin");
+return;
+}
 
-    }catch(e){
+router("admin");
 
-      console.log(e);
-    }
-  }
+onValue(ref(db,"appointments"), snap=>{
+
+let html="";
+
+snap.forEach(s=>{
+
+const d=s.val();
+
+html+=`
+<div class="card">
+<b>${d.doctor}</b><br>
+${d.email}<br>
+${d.specialty}
+</div>`;
+
+});
+
+adminList.innerHTML=html;
+
+});
+
+};
+
+/* ================= AUTH ================= */
+onAuthStateChanged(auth,u=>{
+
+user=u;
+
+if(u){
+
+loadUser();
+
+checkAdmin();
+
+}
+
 });
 
 /* START */
-
-window.addEventListener("DOMContentLoaded", () => {
-  router("home");
+window.addEventListener("DOMContentLoaded",()=>{
+router("home");
 });
 
 </script>
