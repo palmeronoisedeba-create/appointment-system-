@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Doctor Appointment System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital Appointment System</title>
 
 <style>
-body { font-family: Arial; margin: 0; background:#f5f7fa; }
+body { margin:0; font-family:Arial; background:#f5f7fa; }
 
 nav {
   background:#2563eb;
@@ -17,48 +17,30 @@ nav {
 }
 
 nav a {
-  color:#fff;
+  color:white;
   text-decoration:none;
   padding:8px 12px;
   border-radius:5px;
 }
 
-nav a:hover { background:#1e40af; }
-
-.page {
-  display:none;
-  padding:20px;
-  background:white;
-  margin:20px;
-  border-radius:10px;
-}
-
+.page { display:none; padding:20px; background:white; margin:20px; border-radius:10px; }
 .page.active { display:block; }
 
-/* 🧑‍⚕️ HOME DOCTOR GRID */
 .grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:15px;
 }
 
-.doctor {
-  background:#fff;
+.card {
   border:1px solid #ddd;
-  border-radius:12px;
-  padding:15px;
-  text-align:center;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  transition:0.3s;
-}
-
-.doctor:hover {
-  transform:translateY(-5px);
+  padding:10px;
+  border-radius:10px;
 }
 
 .doctor img {
   width:100%;
-  height:180px;
+  height:160px;
   object-fit:cover;
   border-radius:10px;
 }
@@ -77,13 +59,6 @@ button {
 }
 
 button:hover { background:#1e40af; }
-
-.card {
-  padding:10px;
-  border:1px solid #ddd;
-  margin:10px 0;
-  border-radius:8px;
-}
 
 .modal {
   display:none;
@@ -106,75 +81,82 @@ button:hover { background:#1e40af; }
 <body>
 
 <nav>
-  <a href="#home" onclick="show('home')">Home</a>
-  <a href="#login" onclick="show('login')">Login</a>
-  <a href="#signup" onclick="show('signup')">Signup</a>
-  <a href="#appointments" onclick="show('appointments')" id="userNav" style="display:none;">My Appointments</a>
-  <a href="#admin" onclick="show('admin')" id="adminNav" style="display:none;">Admin</a>
+  <a href="#home" onclick="navigate('home')">Home</a>
+  <a href="#signup" onclick="navigate('signup')">Signup</a>
+  <a href="#login" onclick="navigate('login')">Login</a>
+  <a href="#dashboard" onclick="navigate('dashboard')" id="userNav" style="display:none;">Patient Dashboard</a>
+  <a href="#adminLogin" onclick="navigate('adminLogin')">Admin Login</a>
 </nav>
 
-<!-- 🏠 HOME PAGE (UPDATED) -->
+<!-- 🏠 HOME -->
 <div id="home" class="page active">
-
-  <h2>Our Doctors</h2>
-  <p>Book appointments with trusted doctors instantly.</p>
+  <h2>Doctors</h2>
 
   <div class="grid">
 
-    <div class="doctor">
-      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2" />
+    <div class="card doctor">
+      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2">
       <h3>Dr. Sarah Johnson</h3>
       <p>Cardiologist</p>
-      <button onclick="openBook('Dr. Sarah Johnson','Cardiologist')">Book Appointment</button>
+      <button onclick="openBook('Dr. Sarah Johnson','Cardiology')">Book</button>
     </div>
 
-    <div class="doctor">
-      <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d" />
+    <div class="card doctor">
+      <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d">
       <h3>Dr. Michael Chen</h3>
       <p>Neurologist</p>
-      <button onclick="openBook('Dr. Michael Chen','Neurologist')">Book Appointment</button>
-    </div>
-
-    <div class="doctor">
-      <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f" />
-      <h3>Dr. Emily Rodriguez</h3>
-      <p>Pediatrician</p>
-      <button onclick="openBook('Dr. Emily Rodriguez','Pediatrician')">Book Appointment</button>
+      <button onclick="openBook('Dr. Michael Chen','Neurology')">Book</button>
     </div>
 
   </div>
 </div>
 
-<!-- LOGIN -->
-<div id="login" class="page">
-  <h2>Login</h2>
-  <input id="loginEmail" placeholder="Email">
-  <input id="loginPass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
-
-<!-- SIGNUP -->
+<!-- 👤 SIGNUP (PATIENT) -->
 <div id="signup" class="page">
-  <h2>Signup</h2>
-  <input id="signupName" placeholder="Name">
-  <input id="signupEmail" placeholder="Email">
-  <input id="signupPass" type="password" placeholder="Password">
+  <h2>Patient Signup</h2>
+
+  <input id="name" placeholder="Full Name">
+  <input id="email" placeholder="Email">
+  <input id="pass" type="password" placeholder="Password">
+
   <button onclick="signup()">Create Account</button>
 </div>
 
-<!-- USER APPOINTMENTS -->
-<div id="appointments" class="page">
-  <h2>My Appointments</h2>
-  <div id="myList"></div>
+<!-- 🔑 LOGIN (PATIENT) -->
+<div id="login" class="page">
+  <h2>Patient Login</h2>
+
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPass" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
 </div>
 
-<!-- ADMIN -->
+<!-- 📋 PATIENT DASHBOARD -->
+<div id="dashboard" class="page">
+  <h2>Patient Dashboard</h2>
+
+  <h3>Appointments</h3>
+  <div id="list"></div>
+</div>
+
+<!-- 🧑‍⚕️ ADMIN LOGIN -->
+<div id="adminLogin" class="page">
+  <h2>Admin Login</h2>
+
+  <input id="adminEmail" placeholder="Admin Email">
+  <input id="adminPass" type="password" placeholder="Password">
+
+  <button onclick="adminLogin()">Login as Admin</button>
+</div>
+
+<!-- 🧑‍⚕️ ADMIN DASHBOARD -->
 <div id="admin" class="page">
   <h2>Admin Dashboard</h2>
   <div id="adminList"></div>
 </div>
 
-<!-- MODAL -->
+<!-- 📅 MODAL -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <h3>Book Appointment</h3>
@@ -196,7 +178,8 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -216,7 +199,6 @@ const firebaseConfig = {
 ‎  storageBucket: "my-doctor-booking-32153.firebasestorage.app",
 ‎  messagingSenderId: "180925738750",
 ‎  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
-‎}
 };
 
 const app = initializeApp(firebaseConfig);
@@ -224,97 +206,135 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 let user = null;
-let role = "user";
+let isAdmin = false;
 let selected = {};
 
-window.show = (id) => {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+// 🔥 NAVIGATION (SECURE)
+window.navigate = (page) => {
 
-  if (id === "appointments") loadUser();
-  if (id === "admin") loadAdmin();
+  if (page === "admin" && !isAdmin) {
+    alert("Admin login required");
+    page = "adminLogin";
+  }
+
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+
+  window.location.hash = page;
 };
 
+// 🔐 AUTH STATE
 onAuthStateChanged(auth, async (u) => {
   user = u;
 
-  if (u) {
-    const snap = await get(ref(db, "users/" + u.uid));
-    role = snap.exists() ? snap.val().role : "user";
+  document.getElementById("userNav").style.display = u ? "block" : "none";
 
-    userNav.style.display = "block";
-    adminNav.style.display = role === "admin" ? "block" : "none";
-  }
+  if (!u) isAdmin = false;
 });
 
+// 👤 PATIENT SIGNUP
 window.signup = async () => {
-  const u = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPass.value);
+  const cred = await createUserWithEmailAndPassword(auth, email.value, pass.value);
 
-  await set(ref(db, "users/" + u.user.uid), {
-    name: signupName.value,
-    role: "user"
+  await set(ref(db, "users/" + cred.user.uid), {
+    name: name.value,
+    role: "patient"
   });
 
-  alert("Account created");
+  alert("Patient account created");
+  navigate("login");
 };
 
+// 🔑 PATIENT LOGIN
 window.login = async () => {
   await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
-  alert("Logged in");
+
+  alert("Welcome patient");
+  navigate("dashboard");
 };
 
-window.openBook = (d,s) => {
+// 🧑‍⚕️ ADMIN LOGIN (REAL SECURITY CHECK)
+window.adminLogin = async () => {
+  try {
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      adminEmail.value,
+      adminPass.value
+    );
+
+    const snap = await get(ref(db, "users/" + cred.user.uid));
+
+    if (!snap.exists() || snap.val().role !== "admin") {
+      alert("Not an admin account");
+      await signOut(auth);
+      return;
+    }
+
+    isAdmin = true;
+
+    alert("Admin login successful");
+    navigate("admin");
+
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+// 📅 BOOK APPOINTMENT
+window.openBook = (doc, spec) => {
   if (!user) return alert("Login first");
 
-  selected = { d, s };
-  docInfo.innerText = d + " - " + s;
+  selected = { doc, spec };
+  docInfo.innerText = doc + " - " + spec;
   modal.style.display = "flex";
 };
 
 window.closeModal = () => modal.style.display = "none";
 
 window.book = async () => {
-  const id = push(ref(db,"appointments")).key;
+  const id = push(ref(db, "appointments")).key;
 
-  await set(ref(db,"appointments/"+id), {
+  await set(ref(db, "appointments/" + id), {
     userId: user.uid,
     email: user.email,
-    doctor: selected.d,
-    spec: selected.s,
+    doctor: selected.doc,
+    spec: selected.spec,
     date: date.value,
     time: time.value,
-    reason: reason.value
+    reason: reason.value,
+    createdAt: Date.now()
   });
 
   alert("Booked");
   closeModal();
+  loadPatient();
 };
 
-async function loadUser() {
-  const snap = await get(ref(db,"appointments"));
+// 📋 PATIENT DASHBOARD
+async function loadPatient() {
+  const snap = await get(ref(db, "appointments"));
+
   let html = "";
 
   snap.forEach(s => {
     const d = s.val();
+
     if (d.userId === user.uid) {
       html += `<div class="card">
-        <p>${d.doctor}</p>
+        <p><b>${d.doctor}</b></p>
         <p>${d.date} ${d.time}</p>
-        <button onclick="del('${s.key}')">Cancel</button>
+        <p>${d.reason}</p>
       </div>`;
     }
   });
 
-  myList.innerHTML = html;
+  list.innerHTML = html;
 }
 
-window.del = async (id) => {
-  await remove(ref(db,"appointments/"+id));
-  loadUser();
-};
-
+// 🧑‍⚕️ ADMIN DASHBOARD
 async function loadAdmin() {
-  const snap = await get(ref(db,"appointments"));
+  const snap = await get(ref(db, "appointments"));
+
   let html = "";
 
   snap.forEach(s => {
@@ -330,6 +350,12 @@ async function loadAdmin() {
 
   adminList.innerHTML = html;
 }
+
+// ❌ DELETE
+window.del = async (id) => {
+  await remove(ref(db, "appointments/" + id));
+  loadAdmin();
+};
 </script>
 
 </body>
