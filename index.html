@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Secure Doctor Appointment System</title>
 
 <style>
@@ -25,7 +25,6 @@ nav{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
-  align-items:center;
 }
 
 nav a{
@@ -34,7 +33,6 @@ nav a{
   padding:8px 14px;
   border-radius:8px;
   cursor:pointer;
-  transition:.2s;
 }
 
 nav a:hover{
@@ -68,10 +66,6 @@ nav a:hover{
   margin-bottom:10px;
 }
 
-.hero p{
-  opacity:0.9;
-}
-
 /* GRID */
 .grid{
   display:grid;
@@ -85,11 +79,6 @@ nav a:hover{
   border-radius:16px;
   padding:20px;
   box-shadow:0 4px 15px rgba(0,0,0,0.08);
-  transition:.2s;
-}
-
-.card:hover{
-  transform:translateY(-4px);
 }
 
 .card img{
@@ -112,7 +101,6 @@ input{
   margin:8px 0;
   border-radius:10px;
   border:1px solid #cbd5e1;
-  font-size:16px;
 }
 
 button{
@@ -125,7 +113,6 @@ button{
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
-  transition:.2s;
 }
 
 button:hover{
@@ -144,21 +131,13 @@ button:hover{
   padding:4px 10px;
   border-radius:6px;
   margin-bottom:10px;
-  font-size:13px;
 }
 
 .empty{
-  padding:20px;
-  text-align:center;
   background:white;
+  padding:20px;
   border-radius:12px;
-}
-
-/* MOBILE */
-@media(max-width:600px){
-  .hero h1{
-    font-size:26px;
-  }
+  text-align:center;
 }
 </style>
 </head>
@@ -172,8 +151,10 @@ button:hover{
   <a onclick="router('login')">Login</a>
   <a onclick="router('dashboard')">Dashboard</a>
 
-  <!-- Hidden unless admin -->
-  <a id="adminBtn" onclick="openAdmin()" style="display:none;">Admin</a>
+  <!-- ADMIN BUTTON -->
+  <a id="adminBtn" onclick="openAdmin()" style="display:none;">
+    Admin
+  </a>
 </nav>
 
 <!-- HOME -->
@@ -181,10 +162,10 @@ button:hover{
 
   <div class="hero">
     <h1>Doctor Appointment System</h1>
-    <p>Book appointments quickly with trusted doctors.</p>
+    <p>Book appointments with trusted doctors.</p>
   </div>
 
-  <h2 class="section-title">Available Doctors</h2>
+  <h2 class="section-title">Doctors</h2>
 
   <div class="grid">
 
@@ -228,6 +209,7 @@ button:hover{
     <h2 class="section-title">Create Account</h2>
 
     <input id="su_email" type="email" placeholder="Email">
+
     <input id="su_pass" type="password" placeholder="Password">
 
     <button onclick="signup()">Create Account</button>
@@ -242,6 +224,7 @@ button:hover{
     <h2 class="section-title">Login</h2>
 
     <input id="li_email" type="email" placeholder="Email">
+
     <input id="li_pass" type="password" placeholder="Password">
 
     <button onclick="login()">Login</button>
@@ -258,7 +241,7 @@ button:hover{
 
 </div>
 
-<!-- ADMIN -->
+<!-- ADMIN DASHBOARD -->
 <div id="admin" class="page">
 
   <span class="badge">ADMIN</span>
@@ -278,7 +261,7 @@ eruda.init();
 <!-- APP -->
 <script type="module">
 
-/* ================= IMPORTS ================= */
+/* IMPORTS */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -286,8 +269,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -299,21 +281,21 @@ import {
   get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* ================= FIREBASE CONFIG ================= */
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
-
-  apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
+apikey: "AIzaSyC1plqJ1p_SDQoelTrBMkkhff3Ggan2JEc",
 ‎  authDomain: "my-doctor-booking-32153.firebaseapp.com",
 ‎  databaseURL: "https://my-doctor-booking-32153-default-rtdb.firebaseio.com",
 ‎  projectId: "my-doctor-booking-32153",
 ‎  storageBucket: "my-doctor-booking-32153.firebasestorage.app",
 ‎  messagingSenderId: "180925738750",
 ‎  appId: "1:180925738750:web:0f8cee0cbdb05f5b767faf"
+‎};
+  
 
-};
 
-/* ================= INIT ================= */
+/* INIT */
 
 const app = initializeApp(firebaseConfig);
 
@@ -323,40 +305,38 @@ const db = getDatabase(app);
 
 let currentUser = null;
 
-/* ================= HELPERS ================= */
+/* ROUTER */
 
 function router(page){
 
-  document
-    .querySelectorAll(".page")
-    .forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p => {
+    p.classList.remove("active");
+  });
 
-  document
-    .getElementById(page)
-    .classList.add("active");
+  document.getElementById(page).classList.add("active");
 }
 
 window.router = router;
 
+/* HELPERS */
+
 function showError(msg){
   alert(msg);
-}
-
-function getValue(el){
-  return (el?.value || "").trim();
 }
 
 function validateEmail(email){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-/* ================= SIGNUP ================= */
+/* SIGNUP */
 
-window.signup = async () => {
+async function signup(){
 
-  const email = getValue(su_email);
+  const email =
+    document.getElementById("su_email").value.trim();
 
-  const password = getValue(su_pass);
+  const password =
+    document.getElementById("su_pass").value.trim();
 
   try{
 
@@ -381,7 +361,7 @@ window.signup = async () => {
       password
     );
 
-    showError("Account created");
+    alert("Signup successful");
 
     router("login");
 
@@ -389,21 +369,21 @@ window.signup = async () => {
 
     console.log(e);
 
-    if(e.code === "auth/email-already-in-use"){
-      showError("Email already exists");
-    }else{
-      showError("Signup failed");
-    }
+    alert(e.message);
   }
-};
+}
 
-/* ================= LOGIN ================= */
+window.signup = signup;
 
-window.login = async () => {
+/* LOGIN */
 
-  const email = getValue(li_email);
+async function login(){
 
-  const password = getValue(li_pass);
+  const email =
+    document.getElementById("li_email").value.trim();
+
+  const password =
+    document.getElementById("li_pass").value.trim();
 
   try{
 
@@ -418,7 +398,7 @@ window.login = async () => {
       password
     );
 
-    showError("Login successful");
+    alert("Login successful");
 
     router("dashboard");
 
@@ -426,49 +406,48 @@ window.login = async () => {
 
     console.log(e);
 
-    if(e.code === "auth/invalid-credential"){
-      showError("Invalid login credentials");
-    }else{
-      showError("Login failed");
-    }
+    alert("Login failed");
   }
-};
+}
 
-/* ================= BOOK ================= */
+window.login = login;
 
-window.book = async (doctor, specialty) => {
+/* BOOK APPOINTMENT */
+
+async function book(doctor,specialty){
 
   if(!currentUser){
-    showError("Please login first");
+    alert("Please login first");
     router("login");
     return;
   }
 
   try{
 
-    const appointmentRef = push(
-      ref(db,"appointments")
-    );
+    const appointmentRef =
+      push(ref(db,"appointments"));
 
     await set(appointmentRef,{
       userId: currentUser.uid,
       email: currentUser.email,
-      doctor,
-      specialty,
+      doctor: doctor,
+      specialty: specialty,
       createdAt: Date.now()
     });
 
-    showError("Appointment booked");
+    alert("Appointment booked");
 
   }catch(e){
 
     console.log(e);
 
-    showError("Booking failed");
+    alert("Booking failed");
   }
-};
+}
 
-/* ================= LOAD USER APPOINTMENTS ================= */
+window.book = book;
+
+/* USER APPOINTMENTS */
 
 function loadUserAppointments(){
 
@@ -490,40 +469,53 @@ function loadUserAppointments(){
           <small>
             ${new Date(d.createdAt).toLocaleString()}
           </small>
-        </div>`;
+        </div>
+        `;
       }
     });
 
-    myList.innerHTML = html || `
+    document.getElementById("myList").innerHTML =
+      html || `
       <div class="empty">
         No appointments yet
       </div>
-    `;
+      `;
   });
 }
 
-/* ================= ADMIN SECURITY ================= */
+/* OPEN ADMIN */
 
-window.openAdmin = async () => {
+async function openAdmin(){
 
   if(!currentUser){
-    showError("Login first");
+    alert("Login first");
     return;
   }
 
-  const adminSnap = await get(
-    ref(db,"admins/" + currentUser.uid)
-  );
+  try{
 
-  if(!adminSnap.exists()){
-    showError("Access denied");
-    return;
+    const adminSnap = await get(
+      ref(db,"admins/" + currentUser.uid)
+    );
+
+    if(!adminSnap.exists()){
+      alert("Access denied");
+      return;
+    }
+
+    router("admin");
+
+  }catch(e){
+
+    console.log(e);
+
+    alert("Admin check failed");
   }
+}
 
-  router("admin");
-};
+window.openAdmin = openAdmin;
 
-/* ================= LOAD ADMIN ================= */
+/* LOAD ADMIN */
 
 async function loadAdmin(){
 
@@ -547,16 +539,16 @@ async function loadAdmin(){
       <div class="card">
         <h3>${d.doctor}</h3>
         <p>${d.specialty}</p>
-        <br>
         <small>${d.email}</small>
-      </div>`;
+      </div>
+      `;
     });
 
-    adminList.innerHTML = html;
+    document.getElementById("adminList").innerHTML = html;
   });
 }
 
-/* ================= AUTH STATE ================= */
+/* AUTH STATE */
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -564,21 +556,33 @@ onAuthStateChanged(auth, async (user) => {
 
   if(user){
 
+    /* UID CONSOLE */
+    console.log("YOUR UID:", user.uid);
+
     loadUserAppointments();
 
     loadAdmin();
 
-    const adminSnap = await get(
-      ref(db,"admins/" + user.uid)
-    );
+    try{
 
-    if(adminSnap.exists()){
-      adminBtn.style.display = "block";
+      const adminSnap = await get(
+        ref(db,"admins/" + user.uid)
+      );
+
+      if(adminSnap.exists()){
+
+        document.getElementById("adminBtn")
+          .style.display = "block";
+      }
+
+    }catch(e){
+
+      console.log(e);
     }
   }
 });
 
-/* ================= START ================= */
+/* START */
 
 window.addEventListener("DOMContentLoaded", () => {
   router("home");
