@@ -193,6 +193,7 @@ const firebaseConfig ={
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+console.log("DB instance:", db);
 const googleProvider = new GoogleAuthProvider(); // for future Google sign-in
 
 let user = null;
